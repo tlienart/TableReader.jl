@@ -369,7 +369,7 @@ end
     @testset "simple" begin
         # empty
         buffer = IOBuffer("")
-        df = readcsv(buffer)
+        df = readdlm(buffer)
         @test isempty(names(df))
 
         # integers
@@ -378,7 +378,7 @@ end
         1,23,456
         -10,-99,0
         """)
-        df = readcsv(buffer)
+        df = readdlm(buffer)
         @test eof(buffer)
         @test names(df) == [:col1, :col2, :col3]
         @test df[:col1] == [1, -10]
@@ -393,7 +393,7 @@ end
         .000,.123,100.000
         1e3,1.E+123,-8.2e-00
         """)
-        df = readcsv(buffer)
+        df = readdlm(buffer)
         @test eof(buffer)
         @test names(df) == [:col1, :col2, :col3]
         @test df[:col1] == [1.0, -1.2, 0.000, 1e3]
@@ -406,7 +406,7 @@ end
         a,b,c
         foo,bar,baz
         """)
-        df = readcsv(buffer)
+        df = readdlm(buffer)
         @test eof(buffer)
         @test names(df) == [:col1, :col2, :col3]
         @test df[:col1] == ["a", "foo"]
@@ -419,7 +419,7 @@ end
         1,2,3
         4,5,6
         """
-        df = readcsv(IOBuffer(data), header = ["col1", "col2", "col3"])
+        df = readdlm(IOBuffer(data), header = ["col1", "col2", "col3"])
         @test df[:col1] == [1, 4]
         @test df[:col2] == [2, 5]
         @test df[:col3] == [3, 6]
@@ -431,7 +431,7 @@ end
         "hi, there",","
         "1,2,3,4", ",,,"
         """
-        df = readcsv(IOBuffer(data))
+        df = readdlm(IOBuffer(data))
         @test df[:col1] == ["hi, there", "1,2,3,4"]
         @test df[:col2] == [",", ",,,"]
     end
@@ -442,7 +442,7 @@ end
         "",""
         "1","2"
         """
-        df = readcsv(IOBuffer(data))
+        df = readdlm(IOBuffer(data))
         @test ismissing(df[1,:col1])
         @test df[2,:col1] == 1
         @test ismissing(df[1,:col2])
@@ -453,7 +453,7 @@ end
         data = """
         col1,col2
         1,2"""
-        df = readcsv(IOBuffer(data))
+        df = readdlm(IOBuffer(data))
         @test df[:col1] == [1]
         @test df[:col2] == [2]
     end
@@ -463,7 +463,7 @@ end
         col1,,col3,
         1,foo,3,bar
         """
-        df = readcsv(IOBuffer(data))
+        df = readdlm(IOBuffer(data))
         @test df[:col1] == [1]
         @test df[:UNNAMED_2] == ["foo"]
         @test df[:col3] == [3]
@@ -471,22 +471,22 @@ end
     end
 
     @testset "from file" begin
-        df = readcsv(joinpath(@__DIR__, "test.csv"))
+        df = readdlm(joinpath(@__DIR__, "test.csv"))
         @test df[:col1] == [1, 2]
         @test df[:col2] == [1.0, 2.0]
         @test df[:col3] == ["one", "two"]
 
-        df = readcsv(joinpath(@__DIR__, "test.csv.gz"))
+        df = readdlm(joinpath(@__DIR__, "test.csv.gz"))
         @test df[:col1] == [1, 2]
         @test df[:col2] == [1.0, 2.0]
         @test df[:col3] == ["one", "two"]
 
-        df = readcsv(joinpath(@__DIR__, "test.csv.zst"))
+        df = readdlm(joinpath(@__DIR__, "test.csv.zst"))
         @test df[:col1] == [1, 2]
         @test df[:col2] == [1.0, 2.0]
         @test df[:col3] == ["one", "two"]
 
-        df = readcsv(joinpath(@__DIR__, "test.csv.xz"))
+        df = readdlm(joinpath(@__DIR__, "test.csv.xz"))
         @test df[:col1] == [1, 2]
         @test df[:col2] == [1.0, 2.0]
         @test df[:col3] == ["one", "two"]
@@ -496,7 +496,7 @@ end
         if Sys.which("echo") === nothing
             @info "skip tests: echo command is not found"
         else
-            df = readcsv(`echo $("col1,col2\n1,2")`)
+            df = readdlm(`echo $("col1,col2\n1,2")`)
             @test df[:col1] == [1]
             @test df[:col2] == [2]
         end
@@ -505,7 +505,7 @@ end
             @info "skip tests: cat/gzip commands are not found"
         else
             testfile = joinpath(@__DIR__, "test.csv")
-            df = readcsv(pipeline(`cat $(testfile)`, `gzip`))
+            df = readdlm(pipeline(`cat $(testfile)`, `gzip`))
             @test df[:col1] == [1, 2]
             @test df[:col2] == [1.0, 2.0]
             @test df[:col3] == ["one", "two"]

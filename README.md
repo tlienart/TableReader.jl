@@ -78,16 +78,16 @@ update it if it is older than required, and then add this package as follows:
 using TableReader
 
 # Read a CSV file and return a DataFrame object.
-dataframe = readcsv("somefile.csv")
+dataframe = readdlm("somefile.csv")
 
 # Read gzip/xz/zstd compressed files.
-dataframe = readcsv("somefile.csv.gz")
+dataframe = readdlm("somefile.csv.gz")
 
 # Read a remote file as downloading.
-dataframe = readcsv("https://example.com/somefile.csv")
+dataframe = readdlm("https://example.com/somefile.csv")
 
 # Read stdout from a process.
-dataframe = readcsv(`unzip -p data.zip somefile.csv`)
+dataframe = readdlm(`unzip -p data.zip somefile.csv`)
 ```
 
 [transcodingstreams-url]: https://github.com/bicycle1885/TranscodingStreams.jl
